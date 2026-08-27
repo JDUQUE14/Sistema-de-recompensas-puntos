@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
-
+pec = "comidafit"
 
 # Crear tablas de forma simple al iniciar
 def crear_tablas():
@@ -20,7 +20,7 @@ def crear_tablas():
 crear_tablas()
 
 
-# Endpoint 1: Registrar Cliente
+#Registrar Cliente
 @app.post("/api/registrar_cliente")
 def registrar_cliente(datos: dict):
   cedula = datos["cedula"]
@@ -40,7 +40,7 @@ def registrar_cliente(datos: dict):
     return {"status": "error", "mensaje": "La cedula ya existe"}
 
 
-# Endpoint 2: Consultar Saldo
+#Consultar Saldo
 @app.get("/api/consultar/{cedula}")
 def consultar(cedula: str):
   conexion = sqlite3.connect("database.db")
@@ -64,7 +64,7 @@ def consultar(cedula: str):
     return {"encontrado": False, "mensaje": "Cliente no encontrado"}
 
 
-# Endpoint 3: Registrar Compra (1000 pesos = 1 punto)
+#Registrar Compra (1000 pesos = 1 punto)
 @app.post("/api/compra")
 def compra(datos: dict):
   cedula = datos["cedula"]
@@ -96,7 +96,7 @@ def compra(datos: dict):
   }
 
 
-# Endpoint 4: Redimir Puntos
+#Redimir Puntos
 @app.post("/api/redimir")
 def redimir(datos: dict):
   cedula = datos["cedula"]
