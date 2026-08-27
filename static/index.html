@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Puntos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    .contenedor {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    h1 { text-align: center; color: #333; }
+    .caja {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+    input {
+      width: 95%;
+      padding: 8px;
+      margin: 5px 0 10px 0;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 4px;
+    }
+    button:hover { background-color: #0056b3; }
+    .resultado {
+      background-color: #e9ecef;
+      padding: 10px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor">
+    <h1>App de Puntos</h1>
+
+    <!-- 1. Registrar Cliente -->
+    <div class="caja">
+      <h3>1. Registrar Cliente</h3>
+      <input type="text" id="regCedula" placeholder="Cedula">
+      <input type="text" id="regNombre" placeholder="Nombre completo">
+      <button onclick="guardarCliente()">Guardar Cliente</button>
+    </div>
+
+    <!-- 2. Consultar Puntos -->
+    <div class="caja">
+      <h3>2. Consultar Saldo</h3>
+      <input type="text" id="conCedula" placeholder="Ingrese Cedula">
+      <button onclick="consultarPuntos()">Buscar</button>
+      <div id="resultadoCon" class="resultado" style="display:none;"></div>
+    </div>
+
+    <!-- 3. Comprar -->
+    <div class="caja">
+      <h3>3. Registrar Compra</h3>
+      <input type="text" id="comCedula" placeholder="Cedula">
+      <input type="number" id="comMonto" placeholder="Monto compra ($)">
+      <button onclick="guardarCompra()">Acumular Puntos</button>
+    </div>
+
+    <!-- 4. Redimir -->
+    <div class="caja">
+      <h3>4. Redimir Puntos</h3>
+      <input type="text" id="redCedula" placeholder="Cedula">
+      <input type="number" id="redPuntos" placeholder="Puntos a redimir">
+      <button onclick="redimir()">Redimir</button>
+    </div>
+  </div>
+
+  <script>
+    async function guardarCliente() {
+      let cedula = document.getElementById('regCedula').value;
+      let nombre = document.getElementById('regNombre').value;
+
+      let res = await fetch('/api/registrar_cliente', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({cedula: cedula, nombre: nombre})
+      });
+      let data = await res.json();
+      alert(data.mensaje);
+    }
+
+    async function consultarPuntos() {
+      let cedula = document.getElementById('conCedula').value;
+      let res = await fetch('/api/consultar/' + cedula);
+      let data = await res.json();
+
+      let div = document.getElementById('resultadoCon');
+      if (data.encontrado) {
+        div.style.display = 'block';
+        div.innerHTML = "Cliente: " + data.nombre + "<br>Puntos: " + data.puntos + "<br>Equivale a: $" + data.pesos + " COP";
+      } else {
+        alert(data.mensaje);
+        div.style.display = 'none';
+      }
+    }
+
+    async function guardarCompra() {
+      let cedula = document.getElementById('comCedula').value;
+      let monto = document.getElementById('comMonto').value;
+
+      let res = await fetch('/api/compra', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({cedula: cedula, monto: monto})
+      });
+      let data = await res.json();
+      if(data.status == "ok") {
+        alert("Gano " + data.puntos_ganados + " puntos. Total: " + data.total_puntos);
+      } else {
+        alert(data.mensaje);
+      }
+    }
+
+    async function redimir() {
+      let cedula = document.getElementById('redCedula').value;
+      let puntos = document.getElementById('redPuntos').value;
+
+      let res = await fetch('/api/redimir', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({cedula: cedula, puntos: puntos})
+      });
+      let data = await res.json();
+      alert(data.mensaje);
+    }
+  </script>
+</body>
+</html>

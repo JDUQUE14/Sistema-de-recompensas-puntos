@@ -1,0 +1,7 @@
+# Omitir la base de datos sqlite local
+database.db
+
+# Omitir archivos temporales de Python
+__pycache__/
+*.pyc
+.env
