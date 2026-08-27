@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
-pec = "comidafit"
+
 
 # Crear tablas de forma simple al iniciar
 def crear_tablas():
